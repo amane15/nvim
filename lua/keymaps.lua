@@ -37,3 +37,15 @@ vim.keymap.set("v", "<A-k>", ":m .-2<CR>==", opts)
 vim.keymap.set("v", "p", "_dP", opts)
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts)
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts)
+
+vim.api.nvim_create_autocmd("InsertCharPre", {
+	callback = function()
+		vim.api.nvim_buf_set_keymap(
+			0,
+			"i",
+			"<C-k>",
+			"<cmd>lua vim.lsp.buf.signature_help()<CR>",
+			{ noremap = true, silent = true }
+		)
+	end,
+})
