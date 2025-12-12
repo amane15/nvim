@@ -11,7 +11,11 @@ return {
 				enable = true,
 				update_root = false,
 			},
+			filters = {
+				dotfiles = false,
+				custom = { "^.git$", "node_modules", ".cache" },
+			},
+			git = { ignore = false },
 		})
 	end,
 }
-

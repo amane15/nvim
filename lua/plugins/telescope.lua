@@ -22,19 +22,105 @@ return {
 			winblend = 0,
 			file_ignore_patterns = {
 				"node_modules",
+				".git",
+			},
+		},
+		pickers = {
+			find_files = {
+				hidden = true,
+				no_ignore = false,
+				find_command = {
+					"rg",
+					"--files",
+					"--hidden",
+					"--no-ignore", -- override .gitignore hiding
+					"--glob",
+					"!.git/*", -- keep .git folder hidden
+					"--glob",
+					"!node_modules/*",
+					"--glob",
+					"!.cache/*",
+					"--glob",
+					"!.next/*",
+					"--glob",
+					"!dist/*",
+					"--glob",
+					"!build/*",
+					"--glob",
+					"!.venv/*",
+					-- "--glob",
+					-- ".gitignore",
+				},
+			},
+			live_grep = {
+				additional_args = function()
+					return { "--hidden" }
+				end,
 			},
 		},
 	},
 	keys = {
-		{ "<leader>ss", function() require("telescope.builtin").builtin() end,     { desc = "[S]earch [S]elect Telescope" } },
-		{ "<leader>gf", function() require("telescope.builtin").git_files() end,   { desc = "Search [G]it [F]iles" } },
-		{ "<leader>sf", function() require("telescope.builtin").find_files() end,  { desc = "[S]earch [F]iles" } },
-		{ "<leader>sh", function() require("telescope.builtin").help_tags() end,   { desc = "[S]earch [H]elp" } },
-		{ "<leader>sw", function() require("telescope.builtin").grep_string() end, { desc = "[S]earch current [W]ord" } },
-		{ "<leader>sg", function() require("telescope.builtin").live_grep() end,   { desc = "[S]earch by [G]rep" } },
-		{ "<leader>sG", ":LiveGrepGitRoot<cr>",                                    { desc = "[S]earch by [G]rep on Git Root" } },
-		{ "<leader>sd", function() require("telescope.builtin").diagnostics() end, { desc = "[S]earch [D]iagnostics" } },
-		{ "<leader>sr", function() require("telescope.builtin").resume() end,      { desc = "[S]earch [R]esume" } },
+		{
+			"<leader>ss",
+			function()
+				require("telescope.builtin").builtin()
+			end,
+			{ desc = "[S]earch [S]elect Telescope" },
+		},
+		{
+			"<leader>gf",
+			function()
+				require("telescope.builtin").git_files()
+			end,
+			{ desc = "Search [G]it [F]iles" },
+		},
+		{
+			"<leader>sf",
+			function()
+				require("telescope.builtin").find_files()
+			end,
+			{ desc = "[S]earch [F]iles" },
+		},
+		{
+			"<leader>sh",
+			function()
+				require("telescope.builtin").help_tags()
+			end,
+			{ desc = "[S]earch [H]elp" },
+		},
+		{
+			"<leader>sw",
+			function()
+				require("telescope.builtin").grep_string()
+			end,
+			{ desc = "[S]earch current [W]ord" },
+		},
+		{
+			"<leader>sg",
+			function()
+				require("telescope.builtin").live_grep()
+			end,
+			{ desc = "[S]earch by [G]rep" },
+		},
+		{
+			"<leader>sG",
+			":LiveGrepGitRoot<cr>",
+			{ desc = "[S]earch by [G]rep on Git Root" },
+		},
+		{
+			"<leader>sd",
+			function()
+				require("telescope.builtin").diagnostics()
+			end,
+			{ desc = "[S]earch [D]iagnostics" },
+		},
+		{
+			"<leader>sr",
+			function()
+				require("telescope.builtin").resume()
+			end,
+			{ desc = "[S]earch [R]esume" },
+		},
 	},
 	extensions = { "fzf" },
 }
