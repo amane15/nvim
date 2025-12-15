@@ -50,12 +50,58 @@ vim.api.nvim_create_autocmd("InsertCharPre", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("BufWritePre", {
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+-- 	pattern = "*.go",
+-- 	callback = function()
+-- 		vim.lsp.buf.code_action({
+-- 			context = { only = { "source.organizeImports" } },
+-- 			apply = true,
+-- 		})
+-- 	end,
+-- })
+--
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+-- 	pattern = "*.go",
+-- 	callback = function()
+-- 		local params = vim.lsp.util.make_range_params()
+-- 		params.context = { only = { "source.organizeImports" } }
+--
+-- 		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 200)
+--
+-- 		if not result then
+-- 			return
+-- 		end
+--
+-- 		for _, res in pairs(result) do
+-- 			for _, action in pairs(res.result or {}) do
+-- 				if action.edit then
+-- 					vim.lsp.util.apply_workspace_edit(action.edit, "UTF-8")
+-- 				elseif action.command then
+-- 					vim.lsp.buf.execute_command(action.command)
+-- 				end
+-- 			end
+-- 		end
+-- 	end,
+-- })
+--
+vim.api.nvim_create_autocmd("BufWritePost", {
 	pattern = "*.go",
 	callback = function()
+		-- avoid infinite loop
+		if vim.b._go_organizing_imports then
+			return
+		end
+
+		vim.b._go_organizing_imports = true
+
 		vim.lsp.buf.code_action({
 			context = { only = { "source.organizeImports" } },
 			apply = true,
 		})
+
+		-- write silently after imports are fixed
+		vim.cmd("silent! write")
+
+		vim.b._go_organizing_imports = false
 	end,
 })
