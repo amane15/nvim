@@ -11,8 +11,10 @@ return {
 			yaml = { "prettierd", "prettier" },
 			html = { "prettierd", "prettier" },
 			css = { "prettierd", "prettier" },
-			python = { "black" },
+			-- python = { "black" },
+			python = { "ruff_fix", "ruff_format" },
 			go = { "gofumpt", "gofmt" },
+			sql = { "pg_format" },
 		},
 		format_on_save = {
 			timeout_ms = 3000,

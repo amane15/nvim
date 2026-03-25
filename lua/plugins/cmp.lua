@@ -1,34 +1,35 @@
 return {
-    "hrsh7th/nvim-cmp",
-    version = false, -- last release is way too old
-    event = "InsertEnter",
-    dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
-        "hrsh7th/cmp-buffer",
-        "hrsh7th/cmp-path",
-    },
-    -- Not all LSP servers add brackets when completing a function.
-    -- To better deal with this, LazyVim adds a custom option to cmp,
-    -- that you can configure. For example:
-    --
-    -- ```lua
-    -- opts = {
-    --   auto_brackets = { "python" }
-    -- }
-    -- ```
-    opts = function()
-        -- Register nvim-cmp lsp capabilities
+	"hrsh7th/nvim-cmp",
+	version = false, -- last release is way too old
+	event = "InsertEnter",
+	dependencies = {
+		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-path",
+	},
+	-- Not all LSP servers add brackets when completing a function.
+	-- To better deal with this, LazyVim adds a custom option to cmp,
+	-- that you can configure. For example:
+	--
+	-- ```lua
+	-- opts = {
+	--   auto_brackets = { "python" }
+	-- }
+	-- ```
+	opts = function()
+		-- Register nvim-cmp lsp capabilities
 
-        vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+		vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
 		local cmp = require("cmp")
 		local defaults = require("cmp.config.default")()
 		return {
+			preselect = cmp.PreselectMode.Item,
 			completion = {
 				completeopt = "menu,menuone,noinsert",
 			},
 			mapping = cmp.mapping.preset.insert({
-				["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-				["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+				["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+				["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.complete(),
@@ -46,7 +47,7 @@ return {
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
 				{ name = "path" },
-				{ name = "nvim_lsp_signature_help" },
+				-- { name = "nvim_lsp_signature_help" },
 			}, {
 				{ name = "buffer" },
 			}),
@@ -64,7 +65,22 @@ return {
 					hl_group = "CmpGhostText",
 				},
 			},
-			sorting = defaults.sorting,
+			sorting = {
+				priority_weight = 2,
+				comparators = {
+					cmp.config.compare.offset,
+					cmp.config.compare.exact,
+					cmp.config.compare.score,
+
+					-- THIS is key for your use case
+					cmp.config.compare.locality, -- prefers local vars & params
+
+					cmp.config.compare.kind,
+					cmp.config.compare.sort_text,
+					cmp.config.compare.length,
+					cmp.config.compare.order,
+				},
+			},
 		}
-    end,
+	end,
 }

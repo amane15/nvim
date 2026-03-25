@@ -105,3 +105,11 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		vim.b._go_organizing_imports = false
 	end,
 })
+
+vim.keymap.set(
+	"i",
+	"<C-e>",
+	[[if err != nil {
+}]],
+	{ noremap = true }
+)
