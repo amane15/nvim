@@ -8,9 +8,7 @@ vim.keymap.set("n", "<C-j>", "<C-w>j", opts)
 vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
 vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
 
--- Remap for dealing with word wrap
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+-- Remap for dealing with word wrap vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true }) vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
@@ -39,15 +37,15 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", opts)
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", opts)
 
 vim.api.nvim_create_autocmd("InsertCharPre", {
-	callback = function()
-		vim.api.nvim_buf_set_keymap(
-			0,
-			"i",
-			"<C-k>",
-			"<cmd>lua vim.lsp.buf.signature_help()<CR>",
-			{ noremap = true, silent = true }
-		)
-	end,
+    callback = function()
+        vim.api.nvim_buf_set_keymap(
+            0,
+            "i",
+            "<C-k>",
+            "<cmd>lua vim.lsp.buf.signature_help()<CR>",
+            { noremap = true, silent = true }
+        )
+    end,
 })
 
 -- vim.api.nvim_create_autocmd("BufWritePre", {
@@ -85,37 +83,97 @@ vim.api.nvim_create_autocmd("InsertCharPre", {
 -- })
 --
 vim.api.nvim_create_autocmd("BufWritePost", {
-	pattern = "*.go",
-	callback = function()
-		-- avoid infinite loop
-		if vim.b._go_organizing_imports then
-			return
-		end
+    pattern = "*.go",
+    callback = function()
+        -- avoid infinite loop
+        if vim.b._go_organizing_imports then
+            return
+        end
 
-		vim.b._go_organizing_imports = true
+        vim.b._go_organizing_imports = true
 
-		vim.lsp.buf.code_action({
-			context = { only = { "source.organizeImports" } },
-			apply = true,
-		})
+        vim.lsp.buf.code_action({
+            context = { only = { "source.organizeImports" } },
+            apply = true,
+        })
 
-		-- write silently after imports are fixed
-		vim.cmd("silent! write")
+        -- write silently after imports are fixed
+        vim.cmd("silent! write")
 
-		vim.b._go_organizing_imports = false
-	end,
+        vim.b._go_organizing_imports = false
+    end,
 })
 
 vim.keymap.set(
-	"i",
-	"<C-e>",
-	[[if err != nil {
+    "i",
+    "<C-e>",
+    [[if err != nil {
 }]],
-	{ noremap = true }
+    { noremap = true }
 )
 
 vim.api.nvim_create_autocmd("BufEnter", {
-	callback = function()
-		vim.opt.formatoptions:remove({ "c", "r", "o" })
-	end,
+    callback = function()
+        vim.opt.formatoptions:remove({ "c", "r", "o" })
+    end,
+})
+
+local dap = require("dap")
+local pb = require("persistent-breakpoints.api")
+-- Main debugging keys
+vim.keymap.set("n", "<F5>", dap.continue)
+vim.keymap.set("n", "<F10>", dap.step_over)
+vim.keymap.set("n", "<F11>", dap.step_into)
+vim.keymap.set("n", "<S-F11>", dap.step_out)
+
+-- Breakpoints
+vim.keymap.set("n", "<F9>", pb.toggle_breakpoint)
+
+vim.keymap.set("n", "<leader>b", pb.toggle_breakpoint, { desc = "Breakpoint" })
+vim.keymap.set("n", "<leader>db", pb.toggle_breakpoint, { desc = "Breakpoint" })
+
+vim.keymap.set("n", "<leader>dB", pb.set_conditional_breakpoint, {
+    desc = "Conditional Breakpoint",
+})
+
+
+
+vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Continue" })
+
+vim.keymap.set("n", "<leader>dn", dap.step_over, { desc = "Step Over" })
+vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Step Into" })
+vim.keymap.set("n", "<leader>do", dap.step_out, { desc = "Step Out" })
+
+vim.keymap.set("n", "<leader>dr", dap.restart, { desc = "Restart" })
+vim.keymap.set("n", "<leader>dt", dap.terminate, { desc = "Terminate" })
+
+vim.keymap.set("n", "<leader>dl", dap.run_last, { desc = "Run Last" })
+
+vim.keymap.set("n", "<leader>de", function()
+    require("dapui").eval()
+end, { desc = "Eval under cursor" })
+
+vim.keymap.set("n", "<leader>du", function()
+    require("dapui").toggle()
+end, { desc = "Toggle UI" })
+
+vim.fn.sign_define("DapBreakpoint", {
+    text = "",
+    texthl = "DiagnosticError",
+})
+
+vim.fn.sign_define("DapStopped", {
+    text = "",
+    texthl = "DiagnosticWarn",
+    linehl = "CursorLine",
+})
+
+vim.fn.sign_define("DapBreakpointRejected", {
+    text = "",
+    texthl = "DiagnosticError",
+})
+
+vim.fn.sign_define("DapLogPoint", {
+    text = "󰆏",
+    texthl = "DiagnosticHint",
 })
