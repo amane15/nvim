@@ -5,8 +5,8 @@ return {
 			"igorlfs/nvim-dap-view",
 			"leoluz/nvim-dap-go",
 			"nvim-telescope/telescope-dap.nvim",
-			"nvim-dap-virtual-text",
 			"Weissle/persistent-breakpoints.nvim",
+            "thehamsta/nvim-dap-virtual-text",
 		},
 
 		config = function()

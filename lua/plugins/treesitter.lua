@@ -1,17 +1,17 @@
 return {
 	-- Highlight, edit, and navigate code
 	"nvim-treesitter/nvim-treesitter",
+	branch = "main",
 	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects",
+		{ "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
 	},
 	build = ":TSUpdate",
 	config = function()
-		local configs = require("nvim-treesitter.configs")
-		configs.setup({
-			ensure_installed = {},
-			highlight = {
-				enable = true,
-			},
+		-- enable treesitter highlighting
+		vim.api.nvim_create_autocmd("FileType", {
+			callback = function(args)
+				pcall(vim.treesitter.start, args.buf)
+			end,
 		})
 	end,
 }
